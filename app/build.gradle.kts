@@ -46,7 +46,7 @@ dependencies {
     val navVersion = "2.9.5"
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
-
+    implementation("org.osmdroid:osmdroid-android:6.1.14")
 
 // ✅ Align JVM toolchain
     kotlin {
