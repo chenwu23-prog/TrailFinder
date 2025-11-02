@@ -1,0 +1,35 @@
+[
+  {
+    "id": "huckleberry-trail",
+    "name": "Huckleberry Trail (Blacksburg / Meadowbrook)",
+    "lat": 37.2048283,
+    "lng": -80.4208643,
+    "type": "greenway",
+    "approx_length_miles": 15.2,
+    "notes": "Multi-use paved rail-trail that connects Blacksburg and Christiansburg."
+  },
+  {
+    "id": "pandapas-pond",
+    "name": "Pandapas Pond Day Use Area",
+    "lat": 37.28194444,
+    "lng": -80.46916667,
+    "type": "pond / loop trails",
+    "notes": "Forest Service day-use area with short hiking loops and a pond."
+  },
+  {
+    "id": "mcafee-knob",
+    "name": "McAfee Knob (Appalachian Trail viewpoint)",
+    "lat": 37.39291,
+    "lng": -80.03671,
+    "type": "summit / viewpoint",
+    "notes": "Iconic viewpoint on the Appalachian Trail (popular, moderate to strenuous approach)."
+  },
+  {
+    "id": "tinker-cliffs",
+    "name": "Tinker Cliffs (Appalachian Trail)",
+    "lat": 37.43465,
+    "lng": -79.999117,
+    "type": "cliffs / viewpoint",
+    "notes": "Scenic cliffs along the A.T.; offers long-range views."
+  }
+]
