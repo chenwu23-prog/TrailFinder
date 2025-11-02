@@ -34,7 +34,7 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        map = view.findViewById(R.id.map)
+        map = view.findViewById<MapView>(R.id.map)
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
@@ -50,7 +50,9 @@ class MapFragment : Fragment() {
             val marker = Marker(map)
             marker.position = GeoPoint(trail.latitude, trail.longitude)
             marker.title = trail.name
+            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             map.overlays.add(marker)
         }
+        map.invalidate()
     }
 }
