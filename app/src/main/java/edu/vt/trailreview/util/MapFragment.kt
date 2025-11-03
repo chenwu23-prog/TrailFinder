@@ -34,25 +34,43 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        map = view.findViewById<MapView>(R.id.map)
-        map.setTileSource(TileSourceFactory.MAPNIK)
-        map.setBuiltInZoomControls(true)
-        map.setMultiTouchControls(true)
+        super.onViewCreated(view, savedInstanceState)
 
-        // Center the map (Virginia Tech coordinates)
-        val center = GeoPoint(37.2296, -80.4139)
-        map.controller.setZoom(12.0)
-        map.controller.setCenter(center)
+        val mapView = view.findViewById<MapView>(R.id.map)
+        mapView.setTileSource(TileSourceFactory.MAPNIK)
+        val controller = mapView.controller
+        controller.setZoom(12.0)
+        controller.setCenter(GeoPoint(37.2296, -80.4139))
 
-        // Load trails and add markers
-        val trails = JsonLoader.loadTrails(requireContext())
-        for (trail in trails) {
-            val marker = Marker(map)
-            marker.position = GeoPoint(trail.latitude, trail.longitude)
-            marker.title = trail.name
-            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            map.overlays.add(marker)
+        // Load DB trails asynchronously
+        viewLifecycleOwner.lifecycleScope.launch {
+            val db = AppDatabase.getDatabase(requireContext())
+            val trails = withContext(Dispatchers.IO) {
+                db.trailDao().getAllTrails()
+            }
+
+            for (trail in trails) {
+                val marker = Marker(mapView)
+                marker.position = GeoPoint(trail.lat, trail.lng)
+                marker.title = trail.name
+                marker.subDescription = trail.notes
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                mapView.overlays.add(marker)
+            }
+
+            mapView.invalidate()
         }
-        map.invalidate()
     }
+
+    override fun onResume() {
+        super.onResume()
+        map.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        map.onPause()
+    }
+
+
 }

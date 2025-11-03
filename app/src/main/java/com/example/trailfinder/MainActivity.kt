@@ -13,5 +13,10 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, MapFragment())
             .commit()
+
+        // ADD ↓ THIS LINE INSIDE A COROUTINE SCOPE
+        lifecycleScope.launch {
+            SeedHelper.seedDatabaseIfEmpty(this@MainActivity)
+        }
     }
 }
