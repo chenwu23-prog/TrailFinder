@@ -6,5 +6,8 @@ data class TrailEntity(
     val name: String,
     val lat: Double,
     val lng: Double,
-    val notes: String?
+    val notes: String?,
+    val distance: Double,
+    val difficulty: String,
+
 )
