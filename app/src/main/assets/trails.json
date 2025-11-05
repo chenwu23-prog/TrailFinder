@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Mount Vernon Trail",
+    "distanceKm": 17.0,
+    "difficulty": "Easy",
+    "lat": 38.71,
+    "lng": -77.05
+  },
+  {
+    "name": "Scott's Run Loop",
+    "distanceKm": 5.0,
+    "difficulty": "Moderate",
+    "lat": 38.95,
+    "lng": -77.21
+  },
+  {
+    "name": "Potomac Heritage Segment",
+    "distanceKm": 7.5,
+    "difficulty": "Moderate",
+    "lat": 38.79,
+    "lng": -77.07
+  },
+  {
+    "name": "Difficult Run Trail",
+    "distanceKm": 15.0,
+    "difficulty": "Hard",
+    "lat": 38.97,
+    "lng": -77.27
+  }
+]
