@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
 
-@Database(entities = [TrailEntity::class, UserEntity::class], version = 1)
+@Database(entities = [TrailEntity::class, UserEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun trailDao(): TrailDao
     abstract fun userDao(): UserDao
@@ -15,11 +15,16 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "trailfinder_db"
-                ).build().also { INSTANCE = it }
+                    "trailfinder.db"
+                )
+                    // 👇 This line forces rebuild if schema changed
+                    .fallbackToDestructiveMigration()
+                    .build()
+                INSTANCE = instance
+                instance
             }
         }
     }
