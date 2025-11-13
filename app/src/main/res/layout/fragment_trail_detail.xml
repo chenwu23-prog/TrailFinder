@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 🔙 Top App Bar -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/detailToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:title="Trail Info"
+            android:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+
+        <!-- 🖼 Trail Photo (hidden if none) -->
+        <ImageView
+            android:id="@+id/trailPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <!-- 🗺 Map Preview (shown if no photo) -->
+        <org.osmdroid.views.MapView
+            android:id="@+id/mapPreview"
+            android:layout_width="match_parent"
+            android:layout_height="240dp" />
+
+        <!-- 📄 Content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <!-- 🏷 Title -->
+            <TextView
+                android:id="@+id/trailName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trail Name"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <!-- 📏 Distance + Difficulty Badge -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/trailDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5.2 miles"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/trailDifficulty"
+                    android:layout_marginStart="12dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:text="Easy"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:background="@drawable/difficulty_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- 📜 Description -->
+            <TextView
+                android:id="@+id/trailDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Trail description goes here..."
+                android:textSize="16sp"
+                android:layout_marginTop="16dp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:overScrollMode="ifContentScrolls">
+
+                <TextView
+                    android:id="@+id/ratingSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"/>
+            </ScrollView>
+
+            <!-- 📝 Add Note -->
+            <Button
+                android:id="@+id/btnAddNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Note"
+                android:layout_marginTop="24dp" />
+
+            <!-- ✅ Mark Completed -->
+            <Button
+                android:id="@+id/btnMarkCompleted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mark as Completed"
+                android:backgroundTint="@color/teal_700"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="12dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
+

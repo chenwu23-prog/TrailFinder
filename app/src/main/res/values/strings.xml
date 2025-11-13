@@ -5,6 +5,11 @@
     <string name="user_avatar_description">User avatar</string>
     <string name="profile_screen_title">Profile Screen</string>
     <string name="profile_image">Profile Image</string>
+    <string-array name="sort_options">
+        <item>Name (A–Z)</item>
+        <item>Distance (Low → High)</item>
+        <item>Difficulty (Easy → Hard)</item>
+    </string-array>
 
 
 </resources>
