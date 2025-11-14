@@ -75,4 +75,15 @@ class MainActivity : AppCompatActivity() {
         listView.visibility = if (tag == "list") android.view.View.VISIBLE else android.view.View.GONE
         profileView.visibility = if (tag == "profile") android.view.View.VISIBLE else android.view.View.GONE
     }
+
+    fun navigateToTrailDetail(args: Bundle) {
+        val fragment = TrailDetailFragment()
+        fragment.arguments = args
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container_list, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
 }

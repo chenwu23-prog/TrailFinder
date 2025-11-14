@@ -1,15 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="8dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:gravity="center">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- TOP BAR: Search (left) + Sort (right) -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="List Screen"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_gravity="center" />
-</FrameLayout>
+        android:gravity="center_vertical"
+        android:paddingBottom="8dp">
+
+        <!-- SEARCH BAR expands to fill space -->
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search trails..." />
+
+        <!-- SORT SPINNER placed at right -->
+        <Spinner
+            android:id="@+id/sortSpinner"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:spinnerMode="dropdown" />
+    </LinearLayout>
+
+    <!-- TRAIL LIST -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/trailRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="4dp" />
+
+</LinearLayout>

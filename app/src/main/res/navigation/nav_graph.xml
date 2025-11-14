@@ -18,6 +18,15 @@
         tools:layout="@layout/fragment_list" />
 
     <fragment
+        android:id="@+id/trailDetailFragment"
+        android:name="com.example.trailfinder.TrailDetailFragment"
+        android:label="Trail Info">
+        <argument
+            android:name="trailId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.trailfinder.ProfileFragment"
         android:label="Profile"

@@ -21,4 +21,6 @@ interface TrailDao {
 
     @Query("DELETE FROM trails")
     suspend fun clearAll()
+
+
 }
