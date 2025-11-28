@@ -16,6 +16,8 @@ interface TrailDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrail(trail: TrailEntity)
 
+    @Update
+    suspend fun updateTrail(trail: TrailEntity)
     @Delete
     suspend fun deleteTrail(trail: TrailEntity)
 
