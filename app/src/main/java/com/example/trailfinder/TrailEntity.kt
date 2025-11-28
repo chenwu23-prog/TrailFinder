@@ -13,5 +13,8 @@ data class TrailEntity(
     val distance: Double,
     val difficulty: String,
     val notes: String? = null,
-    val photoUri: String? = null // optional photo path or URI
+    val photoUri: String? = null,// optional photo path or URI
+    // NEW: Support MULTIPLE photos
+    val photoUris: List<String> = emptyList()
+
 )

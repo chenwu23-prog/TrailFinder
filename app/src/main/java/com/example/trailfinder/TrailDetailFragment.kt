@@ -2,10 +2,14 @@ package com.example.trailfinder
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -17,6 +21,15 @@ class TrailDetailFragment : Fragment() {
 
     private var trailId: Int = -1
     private lateinit var ratingSummary: TextView
+    private lateinit var photoGallery: RecyclerView
+
+    // Photo picker
+    private val photoPicker =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                addPhotoToTrail(uri)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,10 +48,16 @@ class TrailDetailFragment : Fragment() {
 
         ratingSummary = view.findViewById(R.id.ratingSummary)
 
-        val toolbar = view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.detailToolbar)
+        val toolbar =
+            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.detailToolbar)
         toolbar.setNavigationOnClickListener { activity?.onBackPressedDispatcher?.onBackPressed() }
 
-        val photo = view.findViewById<ImageView>(R.id.trailPhoto)
+        // Photo gallery RecyclerView
+        photoGallery = view.findViewById(R.id.photoGallery)
+        photoGallery.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        val btnAddPhoto = view.findViewById<Button>(R.id.btnAddPhoto)
         val mapPreview = view.findViewById<MapView>(R.id.mapPreview)
         val name = view.findViewById<TextView>(R.id.trailName)
         val distance = view.findViewById<TextView>(R.id.trailDistance)
@@ -56,15 +75,26 @@ class TrailDetailFragment : Fragment() {
             val trail = withContext(Dispatchers.IO) { db.trailDao().getTrailById(trailId) }
 
             trail?.let {
-                if (!it.photoUri.isNullOrEmpty()) {
-                    photo.visibility = View.VISIBLE
-                    mapPreview.visibility = View.GONE
-                    photo.setImageURI(Uri.parse(it.photoUri))
-                } else {
-                    photo.visibility = View.GONE
-                    mapPreview.visibility = View.VISIBLE
-                }
 
+                // ----------------------------------------------
+                // ⭐⭐ LOAD TEST PHOTOS FROM /sdcard/Pictures ⭐⭐
+                // ----------------------------------------------
+                val testUris = listOf(
+                    "android.resource://com.example.trailfinder/${R.drawable.trail1}",
+                    "android.resource://com.example.trailfinder/${R.drawable.trail2}",
+                    "android.resource://com.example.trailfinder/${R.drawable.trail3}",
+                    "android.resource://com.example.trailfinder/${R.drawable.trail4}",
+                    "android.resource://com.example.trailfinder/${R.drawable.trail5}"
+                )
+                Log.d("PHOTO_DEBUG", "Using test photo URIs: $testUris")
+
+                photoGallery.adapter = PhotoAdapter(testUris)
+                photoGallery.visibility = View.VISIBLE
+                mapPreview.visibility = View.GONE
+
+                // ------------------------------
+                // Text + difficulty badge
+                // ------------------------------
                 name.text = it.name
                 distance.text = "${it.distance} miles"
                 description.text = it.notes
@@ -78,11 +108,17 @@ class TrailDetailFragment : Fragment() {
                 difficulty.setBackgroundColor(color)
                 difficulty.text = it.difficulty
 
+                // Map preview position
                 mapPreview.controller.setZoom(14.0)
                 mapPreview.controller.setCenter(GeoPoint(it.lat, it.lng))
             }
 
             refreshRatings()
+        }
+
+        // Add Photo
+        btnAddPhoto.setOnClickListener {
+            photoPicker.launch("image/*")
         }
 
         // Rating dialog
@@ -95,6 +131,35 @@ class TrailDetailFragment : Fragment() {
         }
     }
 
+    // Save added photo
+    private fun addPhotoToTrail(uri: Uri) {
+        val db = AppDatabase.getDatabase(requireContext())
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val trail = withContext(Dispatchers.IO) {
+                db.trailDao().getTrailById(trailId)
+            }
+
+            trail?.let {
+                val updatedList = it.photoUris + uri.toString()
+                val updatedTrail = it.copy(photoUris = updatedList)
+
+                withContext(Dispatchers.IO) {
+                    db.trailDao().updateTrail(updatedTrail)
+                }
+
+                Toast.makeText(requireContext(), "Photo added!", Toast.LENGTH_SHORT).show()
+
+                // Refresh gallery
+                photoGallery.adapter = PhotoAdapter(updatedList)
+                photoGallery.visibility = View.VISIBLE
+
+                view?.findViewById<MapView>(R.id.mapPreview)?.visibility = View.GONE
+            }
+        }
+    }
+
+    // Ratings
     fun refreshRatings() {
         viewLifecycleOwner.lifecycleScope.launch {
             val db = AppDatabase.getDatabase(requireContext())
@@ -107,30 +172,18 @@ class TrailDetailFragment : Fragment() {
                 return@launch
             }
 
-            // ⭐ Average stars
             val avg = ratings.map { it.stars }.average()
             val stars = "⭐".repeat(avg.toInt()) + "☆".repeat(5 - avg.toInt())
 
-            // 💬 Get the latest 2 or 3 comments
-            val recentComments = ratings
+            val comments = ratings
                 .mapNotNull { it.comment }
                 .filter { it.isNotBlank() }
-                .take(3)        // ← change to 2 if you want only two
+                .take(3)
 
-            // 📝 Build display text for comments
-            val commentsBlock = if (recentComments.isEmpty()) {
-                ""
-            } else {
-                "\n" + recentComments.joinToString(
-                    separator = "\n• ",
-                    prefix = "• "
-                )
-            }
+            val commentsBlock = if (comments.isEmpty()) "" else
+                "\n" + comments.joinToString("\n• ", prefix = "• ")
 
-            // Combine stars + comments
             ratingSummary.text = "$stars (${String.format("%.1f", avg)})$commentsBlock"
         }
     }
-
 }
-

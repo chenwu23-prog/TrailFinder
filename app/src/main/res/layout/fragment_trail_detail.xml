@@ -20,19 +20,31 @@
             android:titleTextColor="@android:color/white"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
-        <!-- 🖼 Trail Photo (hidden if none) -->
-        <ImageView
-            android:id="@+id/trailPhoto"
+        <!-- ⭐ MULTIPLE PHOTO GALLERY -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/photoGallery"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
+            android:layout_height="140dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            android:layout_marginTop="12dp" />
 
-        <!-- 🗺 Map Preview (shown if no photo) -->
+        <!-- ➕ Add Photo Button -->
+        <Button
+            android:id="@+id/btnAddPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Photo"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
+
+        <!-- 🗺 Map Preview (shown when no photos) -->
         <org.osmdroid.views.MapView
             android:id="@+id/mapPreview"
             android:layout_width="match_parent"
-            android:layout_height="240dp" />
+            android:layout_height="240dp"
+            android:layout_marginTop="12dp" />
 
         <!-- 📄 Content -->
         <LinearLayout
@@ -89,27 +101,23 @@
                 android:textSize="16sp"
                 android:layout_marginTop="16dp" />
 
-            <ScrollView
+            <!-- ⭐ Ratings Summary -->
+            <TextView
+                android:id="@+id/ratingSummary"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:overScrollMode="ifContentScrolls">
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp" />
 
-                <TextView
-                    android:id="@+id/ratingSummary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"/>
-            </ScrollView>
-
-            <!-- 📝 Add Note -->
+            <!-- 📝 Add Rating -->
             <Button
                 android:id="@+id/btnAddNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Add Note"
+                android:text="Add Rating"
                 android:layout_marginTop="24dp" />
 
-            <!-- ✅ Mark Completed -->
+            <!-- ✔ Mark Completed -->
             <Button
                 android:id="@+id/btnMarkCompleted"
                 android:layout_width="match_parent"
@@ -123,4 +131,6 @@
 
     </LinearLayout>
 </ScrollView>
+
+
 

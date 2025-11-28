@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 @Database(
     entities = [
@@ -11,9 +12,10 @@ import androidx.room.RoomDatabase
         UserEntity::class,
         RatingEntity::class
     ],
-    version = 3,            // keep version
+    version = 4,
     exportSchema = false
 )
+@TypeConverters(Converters::class)   // ← ADD THIS LINE
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun trailDao(): TrailDao
@@ -31,8 +33,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "trailfinder.db"
                 )
-                    // IMPORTANT: remove this so the DB stops resetting
-                    // .fallbackToDestructiveMigration()
+
+                    .fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance
