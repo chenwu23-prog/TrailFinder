@@ -15,6 +15,8 @@ interface TrailDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrail(trail: TrailEntity)
+    @Query("SELECT * FROM trails WHERE difficulty = :difficulty ORDER BY name ASC")
+    suspend fun getTrailsByDifficulty(difficulty: String): List<TrailEntity>
 
     @Update
     suspend fun updateTrail(trail: TrailEntity)
