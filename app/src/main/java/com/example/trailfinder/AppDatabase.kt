@@ -5,14 +5,22 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.trailfinder.data.Badge
+import com.example.trailfinder.data.User
+import com.example.trailfinder.data.UserBadge
+import com.example.trailfinder.data.entities.Review
 
 @Database(
     entities = [
         TrailEntity::class,
         UserEntity::class,
-        RatingEntity::class
+        RatingEntity::class,
+        User::class,
+        Badge::class,
+        UserBadge::class,
+        Review::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)   // ← ADD THIS LINE
@@ -27,19 +35,14 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-
-                val instance = Room.databaseBuilder(
+                Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "trailfinder.db"
-                )
-
-                    .fallbackToDestructiveMigration()
-                    .build()
-
-                INSTANCE = instance
-                instance
+                ).build().also { INSTANCE = it }
             }
         }
     }
+
+
 }

@@ -5,6 +5,9 @@
     <string name="user_avatar_description">User avatar</string>
     <string name="profile_screen_title">Profile Screen</string>
     <string name="profile_image">Profile Image</string>
+    <string name="enter_username">Enter username</string>
+    <string name="save">Save</string>
+    <string name="viewed_trails">Viewed Trails</string>
     <string-array name="sort_options">
         <item>Name (A–Z)</item>
         <item>Distance (Low → High)</item>

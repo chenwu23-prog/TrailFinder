@@ -1,20 +1,30 @@
 package com.example.trailfinder
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.trailfinder.data.repository.BadgeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.trailfinder.ui.profile.BadgeAdapter
+import androidx.core.net.toUri
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private lateinit var usernameEditText: EditText
     private lateinit var avatarImageView: ImageView
     private lateinit var saveButton: Button
+
+    private lateinit var badgeRepository: BadgeRepository
+
+    private lateinit var badgeAdapter: BadgeAdapter
+
+    private val userId = 1
 
     private var currentUser: UserEntity? = null
 
@@ -47,7 +57,7 @@ class ProfileFragment : Fragment() {
 
             // 🟢 Update UI
             usernameEditText.setText(currentUser?.username ?: "Guest")
-            currentUser?.avatarUri?.let { avatarImageView.setImageURI(Uri.parse(it)) }
+            currentUser?.avatarUri?.let { avatarImageView.setImageURI(it.toUri()) }
 
             // 🟢 Save button handler
             saveButton.setOnClickListener {
@@ -64,6 +74,21 @@ class ProfileFragment : Fragment() {
                     currentUser = updatedUser
                     Toast.makeText(requireContext(), "Profile saved!", Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+
+        super.onViewCreated(view, savedInstanceState)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            badgeAdapter = BadgeAdapter()
+
+            val recycler = view.findViewById<RecyclerView>(R.id.badgeRecyclerView)
+            recycler.layoutManager = LinearLayoutManager(requireContext())
+            recycler.adapter = badgeAdapter
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                val badges = badgeRepository.getUserBadges(userId)
+                badgeAdapter.setItems(badges)
             }
         }
     }
