@@ -88,9 +88,12 @@ class TrailDetailFragment : Fragment() {
                 )
                 Log.d("PHOTO_DEBUG", "Using test photo URIs: $testUris")
 
-                photoGallery.adapter = PhotoAdapter(testUris)
+                photoGallery.adapter = PhotoAdapter(testUris) { uri ->
+                    PhotoZoomDialogFragment
+                        .newInstance(uri)
+                        .show(parentFragmentManager, "photoZoom")
+                }
                 photoGallery.visibility = View.VISIBLE
-                mapPreview.visibility = View.GONE
 
                 // ------------------------------
                 // Text + difficulty badge
@@ -151,10 +154,14 @@ class TrailDetailFragment : Fragment() {
                 Toast.makeText(requireContext(), "Photo added!", Toast.LENGTH_SHORT).show()
 
                 // Refresh gallery
-                photoGallery.adapter = PhotoAdapter(updatedList)
-                photoGallery.visibility = View.VISIBLE
 
-                view?.findViewById<MapView>(R.id.mapPreview)?.visibility = View.GONE
+                photoGallery.adapter = PhotoAdapter(updatedList) { uri ->
+                    PhotoZoomDialogFragment
+                        .newInstance(uri)
+                        .show(parentFragmentManager, "photoZoom")
+                }
+                photoGallery.visibility = View.VISIBLE
+               // Do not touch map visibility here
             }
         }
     }

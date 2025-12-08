@@ -7,8 +7,10 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class PhotoAdapter(private val photos: List<String>) :
-    RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
+class PhotoAdapter(
+    private val photos: List<String>,
+    private val onPhotoClick: (String) -> Unit    // 👈 NEW
+) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
     class PhotoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image: ImageView = view.findViewById(R.id.photoImageView)
@@ -27,6 +29,11 @@ class PhotoAdapter(private val photos: List<String>) :
             .load(uriString)
             .centerCrop()
             .into(holder.image)
+
+        // 👇 Handle click to zoom
+        holder.itemView.setOnClickListener {
+            onPhotoClick(uriString)
+        }
     }
 
     override fun getItemCount(): Int = photos.size
