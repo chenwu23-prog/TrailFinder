@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         profileView.visibility = if (tag == "profile") android.view.View.VISIBLE else android.view.View.GONE
     }
 
+    // 👉 Used by LIST tab (ListFragment)
     fun navigateToTrailDetail(args: Bundle) {
         val fragment = TrailDetailFragment()
         fragment.arguments = args
@@ -86,4 +87,14 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
+    // 👉 NEW: used by MAP tab (MapFragment)
+    fun navigateToTrailDetailFromMap(args: Bundle) {
+        val fragment = TrailDetailFragment()
+        fragment.arguments = args
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container_map, fragment)   // ⬅️ use MAP container here
+            .addToBackStack(null)
+            .commit()
+    }
 }

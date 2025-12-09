@@ -1,6 +1,5 @@
 package com.example.trailfinder
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -11,21 +10,20 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.MapTileProviderBasic
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.infowindow.InfoWindow
-import org.osmdroid.tileprovider.tilesource.XYTileSource
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.osmdroid.views.overlay.TilesOverlay
-import androidx.preference.PreferenceManager
+import org.osmdroid.views.overlay.infowindow.InfoWindow
 
 class MapFragment : Fragment() {
 
@@ -39,6 +37,7 @@ class MapFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Required for osmdroid cache/config
         Configuration.getInstance().load(
             requireContext(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -53,7 +52,7 @@ class MapFragment : Fragment() {
         mapView.controller.setZoom(13.5)
         mapView.controller.setCenter(GeoPoint(37.2296, -80.4139)) // Blacksburg
 
-        // 🥾 Hiking overlay
+        // 🥾 Hiking overlay (for topo mode)
         val hikingTileSource = XYTileSource(
             "Hiking",
             0, 17, 256, ".png",
@@ -75,9 +74,12 @@ class MapFragment : Fragment() {
         // 🧭 Load and display trail markers
         loadTrailMarkers()
 
-        // ✅ Close popups when tapping on map
+        // ✅ Close popups when tapping on empty map area
         mapView.overlays.add(object : org.osmdroid.views.overlay.Overlay() {
-            override fun onSingleTapConfirmed(e: android.view.MotionEvent?, mapView: MapView?): Boolean {
+            override fun onSingleTapConfirmed(
+                e: android.view.MotionEvent?,
+                mapView: MapView?
+            ): Boolean {
                 InfoWindow.closeAllInfoWindowsOn(mapView)
                 return false
             }
@@ -101,7 +103,8 @@ class MapFragment : Fragment() {
             )
             mapView.setTileSource(topoSource)
             if (hikingOverlay != null && !mapView.overlays.contains(hikingOverlay)) {
-                mapView.overlays.add(0, hikingOverlay) // keep under pins
+                // keep hiking overlay under pins
+                mapView.overlays.add(0, hikingOverlay)
             }
         } else {
             Log.d(TAG, "Switching to MAPNIK (Street map)")
@@ -144,15 +147,20 @@ class MapFragment : Fragment() {
                         )
                     )
                     db.trailDao().insertAll(seed)
-                    list = seed
+
+                    // 🔁 Re-query to get real auto-generated IDs
+                    list = db.trailDao().getAllTrails()
                 }
                 list
             }
 
             Log.d(TAG, "Loaded ${trails.size} trails from DB")
-            mapView.overlays.removeAll { it is Marker } // Clear old pins
+            // Remove old pins but keep overlays like hiking layer
+            mapView.overlays.removeAll { it is Marker }
 
-            val iconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_location_on_24)
+            val iconDrawable =
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_location_on_24)
+
             for (trail in trails) {
                 val marker = Marker(mapView).apply {
                     position = GeoPoint(trail.lat, trail.lng)
@@ -173,11 +181,15 @@ class MapFragment : Fragment() {
     }
 
     // 💬 Info popup
-    inner class TrailInfoWindow(mapView: MapView, private val trail: TrailEntity) :
-        InfoWindow(R.layout.trail_info_window_osm, mapView) {
+    inner class TrailInfoWindow(
+        mapView: MapView,
+        private val trail: TrailEntity
+    ) : InfoWindow(R.layout.trail_info_window_osm, mapView) {
+
         override fun onOpen(item: Any?) {
             mView.findViewById<TextView>(R.id.trailName).text = trail.name
-            mView.findViewById<TextView>(R.id.trailDistance).text = "Distance: ${trail.distance} mi"
+            mView.findViewById<TextView>(R.id.trailDistance).text =
+                "Distance: ${trail.distance} mi"
             mView.findViewById<TextView>(R.id.trailDifficulty).apply {
                 text = "Difficulty: ${trail.difficulty}"
                 setTextColor(
@@ -189,8 +201,30 @@ class MapFragment : Fragment() {
                     }
                 )
             }
+
+            // ⭐ Wire the info window view click → onClick()
+            mView.setOnClickListener { view ->
+                onClick(view)
+            }
         }
-        override fun onClose() {}
+
+        override fun onClose() {
+            // Clean up listener
+            mView.setOnClickListener(null)
+        }
+
+        // 👇 Called when user taps the info window "card"
+        fun onClick(view: View?) {
+            Log.d(TAG, "InfoWindow clicked for trail id=${trail.id}, name=${trail.name}")
+
+            InfoWindow.closeAllInfoWindowsOn(mapView)
+
+            val args = Bundle().apply {
+                putInt("trailId", trail.id)
+            }
+
+            (activity as? MainActivity)?.navigateToTrailDetailFromMap(args)
+        }
     }
 
     override fun onResume() {
